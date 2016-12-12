@@ -39,13 +39,13 @@ function end(){
 
 function print_result(){
     echo -e "Installation result:"
-    echo -e "copy files   \c"
+    echo -e "    copy files   \c"
     if [ is_cp_to_usr ]; then
         echo -e "Success"
     else
         echo -e "Failed"
     fi
-    echo -e "init server  \c"
+    echo -e "    init server  \c"
     if [ is_init_start ]; then
         echo -e "Success"
     else
@@ -56,26 +56,27 @@ function print_result(){
 ###################################
 # Copy the files to /usr/local/  #
 ###################################
-
-sudo cp keyboard /usr/local/lib/python2.7/dist-packages/
+echo "Copy the files "
+sudo cp -r keyboard /usr/local/lib/python2.7/dist-packages/
 sudo cp sunfounder-io-controller /usr/local/bin/
 sudo cp sunfounder-io-controller.conf /usr/local/etc/
 sudo cp sunfounder-io-controller-init.sh /etc/init.d/
 
 echo -e "    Succeed to copy files :"
-echo -e "    keyboard/ --> /usr/local/lib/python2.7/dist-packages/ \c
-             sunfounder-io-controller --> /usr/local/bin/ \c
-             sunfounder-io-controller.conf --> /usr/local/etc/ \c
-             sunfounder-io-controller-init --> /etc/init.d/ \c"
+echo -e "    keyboard --> /usr/local/lib/python2.7/dist-packages/ \n\c"
+echo -e "    sunfounder-io-controller --> /usr/local/bin/ \n\c"
+echo -e "    sunfounder-io-controller.conf --> /usr/local/etc/ \n\c"
+echo -e "    sunfounder-io-controller-init --> /etc/init.d/ \n"
 is_cp_to_usr=true
 
 ###################################
-# Add script to runlevel #
+# Add init server #
 ###################################
+echo "Add init server"
 if sudo update-rc.d sunfounder-io-controller-init.sh defaults;then
     echo -e "    Succeed to add init server, server will start when system start"
-    echo -e "    Use 'sudo service io-controller stop' to stop server, \c
-                 and 'sudo service io-controller start' to start again \c"
+    echo -e "    Use 'sudo service io-controller stop' to stop server, 
+    and 'sudo service io-controller start' to start again \n"
     is_init_start=true
 else
     echo -e "    Failed to add init server, do you want to skip this? \c"
@@ -91,8 +92,7 @@ fi
 # Print result #
 ###################################
 print_result
-
-echo -e "The stuff you have change may need reboot to take effect."
+echo -e "\nThe stuff you have change may need reboot to take effect."
 echo -e "Do you want to reboot immediately? \c"
 if_continue
 if [ $? = 1 ]; then
