@@ -16,69 +16,121 @@ is_init_start=false
 ###################################
 # Bash functions #
 ###################################
-function if_continue(){
-    while :; do
-        echo  -e "(yes/no) \c"
-        read input_item
-        if [ $input_item = "yes" ]; then
-            break
-        elif [ $input_item = "no" ]; then
-            return 0
+    function if_continue(){
+        while :; do
+            echo  -e "(yes/no) \c"
+            read input_item
+            if [ $input_item = "yes" ]; then
+                break
+            elif [ $input_item = "no" ]; then
+                return 0
+            else
+                echo -e "Input error, please try again."
+            fi
+        done
+        return 1 
+    }
+
+    function end(){
+        print_result
+        echo -e "Exiting..."
+        exit
+    }
+
+    function print_result(){
+        echo -e "Installation result:"
+        echo -e "    copy files   \c"
+        if [ $is_cp_to_usr = true ]; then
+            echo -e "Success"
         else
-            echo -e "Input error, please try again."
+            echo -e "Failed"
         fi
-    done
-    return 1 
-}
-
-function end(){
-    print_result
-    echo -e "Exiting..."
-    exit
-}
-
-function print_result(){
-    echo -e "Installation result:"
-    echo -e "    copy files   \c"
-    if [ is_cp_to_usr ]; then
-        echo -e "Success"
-    else
-        echo -e "Failed"
-    fi
-    echo -e "    init server  \c"
-    if [ is_init_start ]; then
-        echo -e "Success"
-    else
-        echo -e "Failed"
-    fi
-}
+        echo -e "    init server  \c"
+        if [ $is_init_start = true ]; then
+            echo -e "Success"
+        else
+            echo -e "Failed"
+        fi
+    }
 
 ###################################
 # Copy the files to /usr/local/  #
 ###################################
 echo "Copy the files "
-sudo cp -r keyboard /usr/local/lib/python2.7/dist-packages/
-sudo cp sunfounder-io-controller /usr/local/bin/
-sudo cp sunfounder-io-controller.conf /usr/local/etc/
-sudo cp sunfounder-io-controller-init.sh /etc/init.d/
-
-echo -e "    Succeed to copy files :"
-echo -e "    keyboard --> /usr/local/lib/python2.7/dist-packages/ \n\c"
-echo -e "    sunfounder-io-controller --> /usr/local/bin/ \n\c"
-echo -e "    sunfounder-io-controller.conf --> /usr/local/etc/ \n\c"
-echo -e "    sunfounder-io-controller-init --> /etc/init.d/ \n"
 is_cp_to_usr=true
+
+echo -e "    keyboard --> /usr/local/lib/python2.7/dist-packages/ \c"
+if sudo cp -r keyboard /usr/local/lib/python2.7/dist-packages/;then
+    echo -e "    Done "
+else
+    echo -e "    False "
+    is_cp_to_usr=false
+    echo -e "\n Error: The directory 'keyboard' is not here, do you want to skip this?"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped copy 'keyboard'."
+    else
+        end
+    fi
+fi
+
+echo -e "    sunfounder-io-controller --> /usr/local/bin/ \c"
+if sudo cp sunfounder-io-controller /usr/local/bin/;then
+    echo -e "    Done "
+else
+    echo -e "    False "
+    is_cp_to_usr=false
+    echo -e "\n Error: The file 'sunfounder-io-controller' is not here, do you want to skip this?"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped copy 'sunfounder-io-controller'."
+    else
+        end
+    fi
+fi
+
+echo -e "    sunfounder-io-controller.conf --> /usr/local/etc/ \c"
+if sudo cp sunfounder-io-controller.conf /usr/local/etc/;then
+    echo -e "    Done "
+else
+    echo -e "    False "
+    is_cp_to_usr=false
+    echo -e "\n Error: The file 'sunfounder-io-controller.conf' is not here, do you want to skip this?"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped copy 'sunfounder-io-controller.conf'."
+    else
+        end
+    fi
+fi
+
+
+echo -e "    sunfounder-io-controller-init --> /etc/init.d/ \c"   
+if sudo cp sunfounder-io-controller-init.sh /etc/init.d/;then
+    echo -e "    Done "
+else
+    echo -e "    False "
+    is_cp_to_usr=false
+    echo -e "\n Error: The file 'sunfounder-io-controller-init.sh' is not here, do you want to skip this?"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped copy 'sunfounder-io-controller-init.sh'."
+    else
+        end
+    fi
+fi
 
 ###################################
 # Add init server #
 ###################################
-echo "Add init server"
+echo -e "\nAdd init server"
 if sudo update-rc.d sunfounder-io-controller-init.sh defaults;then
     echo -e "    Succeed to add init server, server will start when system start"
     echo -e "    Use 'sudo service io-controller stop' to stop server, 
     and 'sudo service io-controller start' to start again \n"
     is_init_start=true
 else
+    is_init_start=false
     echo -e "    Failed to add init server, do you want to skip this? \c"
     if_continue
     if [ $? = 1 ] ; then
