@@ -1,0 +1,104 @@
+#!/bin/bash
+
+#```
+
+if [ "$(whoami)" != "root" ] ; then
+    echo -e "You must run this script as root."
+    end
+fi
+
+###################################
+# Flags  #
+###################################
+is_cp_to_usr=false
+is_init_start=false 
+
+###################################
+# Bash functions #
+###################################
+function if_continue(){
+    while :; do
+        echo  -e "(yes/no) \c"
+        read input_item
+        if [ $input_item = "yes" ]; then
+            break
+        elif [ $input_item = "no" ]; then
+            return 0
+        else
+            echo -e "Input error, please try again."
+        fi
+    done
+    return 1 
+}
+
+function end(){
+    print_result
+    echo -e "Exiting..."
+    exit
+}
+
+function print_result(){
+    echo -e "Installation result:"
+    echo -e "copy files   \c"
+    if [ is_cp_to_usr ]; then
+        echo -e "Success"
+    else
+        echo -e "Failed"
+    fi
+    echo -e "init server  \c"
+    if [ is_init_start ]; then
+        echo -e "Success"
+    else
+        echo -e "Failed"
+    fi
+}
+
+###################################
+# Copy the files to /usr/local/  #
+###################################
+
+sudo cp keyboard /usr/local/lib/python2.7/dist-packages/
+sudo cp sunfounder-io-controller /usr/local/bin/
+sudo cp sunfounder-io-controller.conf /usr/local/etc/
+sudo cp sunfounder-io-controller-init.sh /etc/init.d/
+
+echo -e "    Succeed to copy files :"
+echo -e "    keyboard/ --> /usr/local/lib/python2.7/dist-packages/ \c
+             sunfounder-io-controller --> /usr/local/bin/ \c
+             sunfounder-io-controller.conf --> /usr/local/etc/ \c
+             sunfounder-io-controller-init --> /etc/init.d/ \c"
+is_cp_to_usr=true
+
+###################################
+# Add script to runlevel #
+###################################
+if sudo update-rc.d sunfounder-io-controller-init.sh defaults;then
+    echo -e "    Succeed to add init server, server will start when system start"
+    echo -e "    Use 'sudo service io-controller stop' to stop server, \c
+                 and 'sudo service io-controller start' to start again \c"
+    is_init_start=true
+else
+    echo -e "    Failed to add init server, do you want to skip this? \c"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped add init server."
+    else
+        end
+    fi
+fi
+
+###################################
+# Print result #
+###################################
+print_result
+
+echo -e "The stuff you have change may need reboot to take effect."
+echo -e "Do you want to reboot immediately? \c"
+if_continue
+if [ $? = 1 ]; then
+    echo -e "Rebooting..."
+    sudo reboot
+else
+    echo -e "Exiting..."
+    exit
+fi
