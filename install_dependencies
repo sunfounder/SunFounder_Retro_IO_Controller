@@ -45,7 +45,7 @@ is_init_start=false
         else
             echo -e "Failed"
         fi
-        echo -e "    init server  \c"
+        echo -e "    init service  \c"
         if [ $is_init_start = true ]; then
             echo -e "Success"
         else
@@ -68,7 +68,7 @@ else
     echo -e "\n Error: The directory 'keyboard' is not here, do you want to skip this?"
     if_continue
     if [ $? = 1 ] ; then
-        echo -e "    Skipped copy 'keyboard'."
+        echo -e "    Skipped copying 'keyboard'."
     else
         end
     fi
@@ -83,7 +83,7 @@ else
     echo -e "\n Error: The file 'sunfounder-io-controller' is not here, do you want to skip this?"
     if_continue
     if [ $? = 1 ] ; then
-        echo -e "    Skipped copy 'sunfounder-io-controller'."
+        echo -e "    Skipped copying 'sunfounder-io-controller'."
     else
         end
     fi
@@ -98,7 +98,7 @@ else
     echo -e "\n Error: The file 'sunfounder-io-controller.conf' is not here, do you want to skip this?"
     if_continue
     if [ $? = 1 ] ; then
-        echo -e "    Skipped copy 'sunfounder-io-controller.conf'."
+        echo -e "    Skipped copying 'sunfounder-io-controller.conf'."
     else
         end
     fi
@@ -114,27 +114,27 @@ else
     echo -e "\n Error: The file 'sunfounder-io-controller-init.sh' is not here, do you want to skip this?"
     if_continue
     if [ $? = 1 ] ; then
-        echo -e "    Skipped copy 'sunfounder-io-controller-init.sh'."
+        echo -e "    Skipped copying 'sunfounder-io-controller-init.sh'."
     else
         end
     fi
 fi
 
 ###################################
-# Add init server #
+# Add service #
 ###################################
-echo -e "\nAdd init server"
+echo -e "\nAdd service"
 if sudo update-rc.d sunfounder-io-controller-init.sh defaults;then
-    echo -e "    Succeed to add init server, server will start when system start"
-    echo -e "    Use 'sudo service io-controller stop' to stop server, 
+    echo -e "    Succeed to add service, service will start when system start"
+    echo -e "    Use 'sudo service io-controller stop' to stop service, 
     and 'sudo service io-controller start' to start again \n"
     is_init_start=true
 else
     is_init_start=false
-    echo -e "    Failed to add init server, do you want to skip this? \c"
+    echo -e "    Failed to add service, do you want to skip this? \c"
     if_continue
     if [ $? = 1 ] ; then
-        echo -e "    Skipped add init server."
+        echo -e "    Skipped adding service."
     else
         end
     fi
