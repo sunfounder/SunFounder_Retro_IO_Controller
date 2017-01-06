@@ -54,9 +54,9 @@ is_init_start=false
     }
 
 ###################################
-# Copy the files to /usr/local/  #
+# Copy files to /usr/local/  #
 ###################################
-echo "Copy the files "
+echo "Copy files "
 is_cp_to_usr=true
 
 echo -e "    keyboard --> /usr/local/lib/python2.7/dist-packages/ \c"
