@@ -13,29 +13,23 @@ config_file = "/usr/local/etc/sunfounder-io-controller.conf"
 print "Configure file is at:"
 print config_file
 
-KEYS    = ['up', 'down', 'left', 'right', 'return', 'space', 'ctrl', 'alt', 'z', 'x', 'a', 's', 'esc']
-BUTTONS = ["D-PAD UP", "D-PAD DOWN", "D-PAD LEFT", "D-PAD RIGHT", "START", "SELECT", "A", "B", "X", "Y", "LEFT SHOULDER", "RIGHT SHOULDER", "Exit"]
-PINS    = [17, 18, 27, 22, 23, 24, 25, 4, 5, 6, 13, 19, 26]
-
-button_lenth = len(BUTTONS)
+KEYS    = []
+BUTTONS = []
+PINS    = []
 
 def read_config():
     global PINS
-    conf = open(config_file,'r')
+    conf = open(config_file, 'r')
     lines=conf.readlines()
     conf.close()
     # Find the arguement and set the value
-    for i in range(button_lenth):
-        for line in lines:
-            if line[0] != '#':
-                name_value = line.strip().split('=')
-                if name_value != ['']:
-                    name = name_value[0].strip()
-                    value = name_value[1].strip()
-                    if name == BUTTONS[i]:
-                        #print "found key! key: %s  value: %s" % (key, value)
-                        PINS[i] = int(value)
-                        break
+    for line in lines:
+        if line[0] != '#':
+            configs = line.strip().split(',')
+            if configs != ['']:
+                BUTTONS.append(configs[0].strip())
+                KEYS.append(configs[1].strip())
+                PINS.append(configs[2].strip())
 
 def setup():
     read_config()
@@ -47,7 +41,7 @@ def main():
     for i in PINS:
         last_pin_state.append(1)
     while True:
-        for i in range(button_lenth):
+        for i in range(len(BUTTONS)):
             current_pin_state = GPIO.input(PINS[i])
             if current_pin_state != last_pin_state[i]:
                 sleep(20/1000.0)
