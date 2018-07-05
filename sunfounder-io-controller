@@ -29,7 +29,7 @@ def read_config():
             if configs != ['']:
                 BUTTONS.append(configs[0].strip())
                 KEYS.append(configs[1].strip())
-                PINS.append(configs[2].strip())
+                PINS.append(int(configs[2].strip()))
 
 def setup():
     read_config()
@@ -49,14 +49,14 @@ def main():
                     if current_pin_state:
                         print "Channel GPIO%s Released!" % PINS[i]
                         try:
-                            keyboard.release(KEYS[PINS.index(PINS[i])])
+                            keyboard.release(KEYS[i])
                             #break
                         except Exception, e:
                             print e
                     else:
                         print "Channel GPIO%s Pressed!" % PINS[i]
                         try:
-                            keyboard.press(KEYS[PINS.index(PINS[i])])
+                            keyboard.press(KEYS[i])
                             #break
                         except Exception, e:
                             print e

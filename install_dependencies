@@ -44,6 +44,12 @@ is_init_start=false
         else
             echo -e "Failed"
         fi
+        echo -e "    enable event  \c"
+        if [ $is_en_ev = true ]; then
+            echo -e "Success"
+        else
+            echo -e "Failed"
+        fi
     }
 
 ###################################
@@ -128,6 +134,24 @@ else
     if_continue
     if [ $? = 1 ] ; then
         echo -e "    Skipped adding service."
+    else
+        end
+    fi
+fi
+
+###################################
+# Enable event                    #
+###################################
+echo -e "\nEnable event"
+if sudo modprobe evdev;then
+    echo -e "    Succeed to enable event"
+    is_en_ev=true
+else
+    is_en_ev=false
+    echo -e "    Failed to enable event, do you want to skip this? \c"
+    if_continue
+    if [ $? = 1 ] ; then
+        echo -e "    Skipped enable event."
     else
         end
     fi
